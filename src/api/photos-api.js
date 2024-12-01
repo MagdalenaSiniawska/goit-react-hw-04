@@ -13,14 +13,27 @@ axios.defaults.params = {
 };
 
 const fetchGalleryPhotos = async (query, page) => {
-	const response = await axios.get('/search/photos', {
-		params: {
-			query,
-			page,
-		},
-	});
+	try {
+		const response = await axios.get('/search/photos', {
+			params: {
+				query,
+				page,
+			},
+		});
 
-	return response.data;
+		if (response.data.results && response.data.results.length > 0) {
+			return response.data;
+		} else {
+			throw new Error('No results found');
+		}
+	} catch (error) {
+		if (error.response) {
+			console.error('API error:', error.response);
+		} else {
+			console.error('Error:', error.message);
+		}
+		throw error;
+	}
 };
 
 export default fetchGalleryPhotos;
